@@ -3,3 +3,4 @@ uvicorn[standard]
 python-can
 pyside6
 pyserial
+j2534
