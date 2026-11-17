@@ -1,0 +1,21 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../xpressive-body-shop-estimator"
+		}
+	],
+	"settings": {
+		"terminal.integrated.cwd": "D:\\REPAIR SUITE WINDOWS",
+		"terminal.integrated.env.windows": {
+			"TEMP": "D:\\REPAIR SUITE WINDOWS\\_build_cache\\tmp",
+			"TMP": "D:\\REPAIR SUITE WINDOWS\\_build_cache\\tmp",
+			"npm_config_cache": "D:\\REPAIR SUITE WINDOWS\\_build_cache\\npm",
+			"ELECTRON_CACHE": "D:\\REPAIR SUITE WINDOWS\\_build_cache\\electron",
+			"ELECTRON_BUILDER_CACHE": "D:\\REPAIR SUITE WINDOWS\\_build_cache\\electron-builder"
+		},
+		"python.terminal.activateEnvironment": false
+	}
+}
