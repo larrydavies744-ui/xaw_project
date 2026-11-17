@@ -1,0 +1,66 @@
+{
+	"name": "xpressive-body-shop-estimator",
+	"version": "1.0.3",
+	"description": "Desktop wrapper and installer build for the Xpressive Body Shop Estimator.",
+	"main": "main.js",
+	"private": true,
+	"author": "Xpressive Autoworks",
+	"license": "UNLICENSED",
+	"scripts": {
+		"clean:dist": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"if (Test-Path dist) { Remove-Item -Recurse -Force dist }\"",
+		"start": "electron .",
+		"make:icon": "node scripts/create-icons.mjs",
+		"pack": "npm run make:icon && electron-builder --dir",
+		"dist": "npm run make:icon && electron-builder --win nsis",
+		"dist:clean": "npm run clean:dist && npm run dist",
+		"dist:signed": "npm run make:icon && node scripts/build-signed.mjs",
+		"smoke:scheduler": "node scripts/smoke-scheduler.mjs"
+	},
+	"devDependencies": {
+		"electron": "^36.3.2",
+		"electron-builder": "^26.0.12",
+		"jsdom": "^26.1.0",
+		"png-to-ico": "^2.1.8",
+		"sharp": "^0.34.2"
+	},
+	"build": {
+		"appId": "com.xpressive.autoworks.estimator",
+		"productName": "Xpressive Body Shop Estimator",
+		"directories": {
+			"output": "dist"
+		},
+		"files": [
+			"app.js",
+			"index.html",
+			"splash.html",
+			"styles.css",
+			"README.txt",
+			"main.js",
+			"preload.js",
+			"package.json",
+			"assets/**/*"
+		],
+		"extraResources": [
+			{
+				"from": "../Xpressive Autoworks Customer App",
+				"to": "engineering-suite",
+				"filter": ["**/*"]
+			}
+		],
+		"win": {
+			"target": [
+				"nsis"
+			],
+			"signAndEditExecutable": false,
+			"icon": "assets/icon.ico",
+			"artifactName": "Xpressive-Body-Shop-Estimator-Setup-${version}.${ext}"
+		},
+		"nsis": {
+			"oneClick": false,
+			"allowToChangeInstallationDirectory": true,
+			"createDesktopShortcut": true,
+			"createStartMenuShortcut": true,
+			"shortcutName": "Xpressive Body Shop Estimator"
+		}
+	}
+}

@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xpressive Autoworks</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #1f1512;
+      --bg-soft: #6b3f2f;
+      --line: rgba(240, 199, 166, 0.28);
+      --text: #fff7f2;
+      --muted: rgba(255, 247, 242, 0.76);
+      --accent: #f0c7a6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      font-family: Aptos, "Segoe UI", "Trebuchet MS", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.12), transparent 34%),
+        linear-gradient(140deg, var(--bg), #3b241c 48%, var(--bg-soft));
+    }
+
+    .splash-shell {
+      width: min(560px, calc(100vw - 32px));
+      padding: 26px;
+      border-radius: 32px;
+      border: 1px solid var(--line);
+      background: rgba(14, 10, 8, 0.28);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(18px);
+      text-align: center;
+    }
+
+    .splash-shell img {
+      width: min(100%, 360px);
+      height: auto;
+      object-fit: contain;
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.92);
+      padding: 10px 14px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin: 18px 0 10px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 34px;
+    }
+
+    p {
+      margin: 12px auto 0;
+      max-width: 430px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .credit-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .credit-row span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(240, 199, 166, 0.18);
+      background: rgba(255, 255, 255, 0.07);
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+    }
+  </style>
+</head>
+<body>
+  <main class="splash-shell">
+    <img src="assets/shop-logo-source.png" alt="Xpressive Autoworks logo" />
+    <div class="eyebrow">Xpressive Autoworks</div>
+    <h1>Body Shop Estimator</h1>
+    <p>Custom estimating workspace for collision intake, insurer review, repair planning, and delivery-ready documentation.</p>
+    <div class="credit-row">
+      <span>Credits: Xpressive Autoworks</span>
+      <span>Desktop release build</span>
+      <span>Logo and workflow branding</span>
+    </div>
+  </main>
+</body>
+</html>

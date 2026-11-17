@@ -1,0 +1,25 @@
+# Build caches and temp
+_build_cache/
+tmp/
+output/builds/
+
+# Node.js
+node_modules/
+
+# Electron build outputs
+dist/
+*.exe
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+
+# Vercel
+.vercel

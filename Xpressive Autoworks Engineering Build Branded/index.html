@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xpressive Autoworks Body Shop Estimator</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    try {
+      const savedTheme = localStorage.getItem('xpressive_body_shop_theme_v1') || 'orange';
+      document.documentElement.dataset.theme = savedTheme;
+    } catch {}
+  </script>
+</head>
+<body>
+  <div id="copilotToast" class="copilot-toast" aria-live="polite" aria-atomic="true"></div>
+  <div id="startupSplash" class="startup-splash mountain-race-cinematic" role="dialog" aria-label="Xpressive Autoworks mountain race introduction">
+    <div class="race-sky" aria-hidden="true"></div>
+    <div class="mountain-layer mountain-far" aria-hidden="true"></div>
+    <div class="mountain-layer mountain-near" aria-hidden="true"></div>
+    <div class="race-road" aria-hidden="true"><span class="road-line line-one"></span><span class="road-line line-two"></span><span class="road-line line-three"></span></div>
+    <div class="race-car race-car-orange" aria-hidden="true"><span class="car-cabin"></span><span class="car-wheel wheel-front"></span><span class="car-wheel wheel-rear"></span><span class="dust-trail"></span></div>
+    <div class="race-car race-car-blue" aria-hidden="true"><span class="car-cabin"></span><span class="car-wheel wheel-front"></span><span class="car-wheel wheel-rear"></span><span class="dust-trail"></span></div>
+    <div class="race-vignette" aria-hidden="true"></div>
+    <div class="race-title" aria-hidden="true">MOUNTAIN RUN</div>
+    <div class="splash-card race-brand-reveal">
+      <img src="assets/shop-logo-source.png" alt="Xpressive Autoworks logo" class="splash-logo" />
+      <span class="eyebrow">Xpressive Autoworks</span>
+      <h1>Body Shop Estimator</h1>
+      <p class="splash-copy">Precision collision estimating. Engineered for the shop.</p>
+      <div class="splash-credit-list">
+        <span>Designed for Xpressive Autoworks</span>
+        <span>Automotive Engineering Ã‚Â· 323-326-7354</span>
+        <span>Powered by Xpressive Shop Technology</span>
+      </div>
+    </div>
+    <button id="skipSplashBtn" class="splash-skip" type="button">Skip Intro</button>
+    <div class="cinema-bars" aria-hidden="true"></div>
+  </div>
+  <section id="authGate" class="auth-gate" aria-label="Secure sign in">
+    <div class="auth-backdrop"></div>
+    <div class="auth-shell">
+      <div class="auth-brand-panel">
+        <img src="assets/shop-logo-source.png" alt="Xpressive Autoworks" class="auth-logo" />
+        <span class="eyebrow">Secure Shop Workspace</span>
+        <h1>Xpressive Autoworks</h1>
+        <p>Sign in to open estimates, customer records, production tools, and repair documentation.</p>
+        <div class="auth-feature-row"><span>Collision Estimates</span><span>Staff Sessions</span><span>Local Data</span></div>
+      </div>
+      <div class="auth-form-panel">
+        <div class="auth-tabs" role="tablist"><button id="shopLoginTab" class="auth-tab is-active" type="button">Manager Sign In</button><button id="staffLoginTab" class="auth-tab" type="button">Staff Sign In</button></div>
+        <form id="shopLoginForm" class="auth-form"><span class="eyebrow">Service Manager Access</span><h2 id="managerLoginTitle">Manager Sign In</h2><p id="managerLoginHelp">Sign in to manage shop access and staff accounts.</p><label>Manager Username<input id="shopUsername" type="text" autocomplete="username" required /></label><label>Manager Password<input id="shopPassword" type="password" minlength="8" autocomplete="current-password" required /></label><label id="confirmManagerPasswordLabel" hidden>Confirm Password<input id="confirmManagerPassword" type="password" minlength="8" autocomplete="new-password" /></label><p id="shopLoginError" class="auth-error" aria-live="polite"></p><button id="managerLoginSubmit" class="auth-submit" type="submit">Open Dashboard</button></form>
+        <form id="staffLoginForm" class="auth-form" hidden><span class="eyebrow">Team Access</span><h2>Staff Sign In</h2><p>Enter your username: first letter of your first name plus your full last name.</p><label>Staff Username<input id="staffUsername" type="text" autocomplete="username" placeholder="LSmith" required /></label><label>Four-Digit PIN<input id="staffPin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="one-time-code" required /></label><p id="staffLoginError" class="auth-error" aria-live="polite"></p><button class="auth-submit" type="submit">Start Staff Session</button></form>
+      </div>    </div>
+  </section>
+  <section id="programChoice" class="program-choice" hidden aria-label="Choose a program">
+    <div class="program-choice-backdrop"></div>
+    <div class="program-choice-shell">
+      <img src="assets/shop-logo-source.png" alt="Xpressive Autoworks" class="program-choice-logo" />
+      <span class="eyebrow">One Account - Two Programs</span>
+      <h1>What would you like to open?</h1>
+      <p id="programChoiceWelcome" class="program-choice-welcome"></p>
+      <div class="program-choice-grid">
+        <button id="openEstimatorBtn" class="program-card" type="button"><strong>Body Shop Estimator</strong><span>Create estimates, manage customers, schedule repairs, and prepare claim packets.</span><em>Open Estimator</em></button>
+        <button id="openEngineeringSuiteBtn" class="program-card" type="button"><strong>Engineering Repair Suite</strong><span>Open diagnostics, repair information, service tools, and engineering workflows.</span><em>Open Repair Suite</em></button>
+      </div>
+      <p id="programChoiceError" class="auth-error" aria-live="polite"></p>
+      <button id="choiceSignOutBtn" class="secondary-btn" type="button">Sign Out</button>
+    </div>
+  </section>  <section id="staffManagerModal" class="staff-manager-modal" hidden aria-label="Staff access manager"><div class="staff-manager-backdrop"></div><div class="staff-manager-shell"><div class="staff-manager-head"><div><span class="eyebrow">Service Manager</span><h2>Staff Access</h2></div><button id="closeStaffManagerBtn" type="button" class="secondary-btn">Close</button></div><p>Create usernames automatically from the first initial and full last name. Assign exactly four PIN digits.</p><form id="staffAccountForm" class="staff-account-form"><input id="staffAccountId" type="hidden" /><label>First Name<input id="staffFirstName" required /></label><label>Last Name<input id="staffLastName" required /></label><label>Role<select id="staffRole"><option>Service Advisor</option><option>Estimator</option><option>Technician</option><option>Production Manager</option><option>Office Staff</option></select></label><label>Four-Digit PIN<input id="staffAssignedPin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required /></label><div class="staff-username-preview">Username: <strong id="staffUsernamePreview">—</strong></div><button type="submit" class="auth-submit">Save Staff Account</button></form><p id="staffManagerError" class="auth-error" aria-live="polite"></p><div id="staffAccountList" class="staff-account-list"></div></div></section>  <div class="page-shell is-booting">
+  <header class="topbar">
+    <div class="brand-head">
+      <span class="eyebrow">Collision Estimate Workspace</span>
+      <h1 id="shopNameHeading">Xpressive Autoworks</h1>
+      <p id="shopTaglineHeading">Body Shop Estimator</p>
+    </div>
+    <div class="actions no-print">
+      <div id="signedInIdentity" class="signed-in-identity" hidden><span id="signedInName"></span><small id="signedInRole"></small></div>
+      <button id="programChoiceBtn" class="secondary-btn" type="button" hidden>Programs</button><button id="manageStaffBtn" class="secondary-btn" type="button" hidden>Staff Access</button><button id="signOutBtn" class="secondary-btn" type="button" hidden>Sign Out</button>      <div class="save-state">
+        <span id="saveStateBadge" class="save-badge">Saved</span>
+        <small id="saveStateText">Ready</small>
+      </div>
+      <label class="packet-mode-label">Packet
+        <select id="packetAudience">
+          <option value="insurer">Insurer</option>
+          <option value="customer">Customer</option>
+        </select>
+      </label>
+      <label class="packet-mode-label">Theme
+        <select id="themeColorSelect">
+          <option value="red">Red</option>
+          <option value="orange">Orange</option>
+          <option value="yellow">Yellow</option>
+          <option value="green">Green</option>
+          <option value="blue">Blue</option>
+          <option value="purple">Purple</option>
+          <option value="black">Black</option>
+          <option value="white">White</option>
+        </select>
+      </label>
+      <button id="newEstimateBtn">New Estimate</button>
+      <button id="duplicateEstimateBtn">Duplicate</button>
+      <button id="archiveEstimateBtn" class="secondary-btn">Archive</button>
+      <button id="deleteEstimateBtn" class="secondary-btn">Delete</button>
+      <button id="saveEstimateBtn">Save Estimate</button>
+      <button id="printBtn">Print</button>
+      <button id="pdfPacketBtn">PDF Packet</button>
+      <button id="sharePacketBtn">Share Packet</button>
+      <button id="exportBtn">Export JSON</button>
+      <label class="import-label">Import JSON<input type="file" id="importFile" accept="application/json" hidden /></label>
+      <label class="import-label secondary-import">Import CSV<input type="file" id="importCsvFile" accept=".csv,text/csv" hidden /></label>
+    </div>
+  </header>
+  <main class="layout">
+    <aside class="sidebar no-print">
+      <section class="card accent-card">
+        <h2>Estimate Snapshot</h2>
+        <div class="snapshot-grid">
+          <div>
+            <span>Lines</span>
+            <strong id="snapshotLineCount">0</strong>
+          </div>
+          <div>
+            <span>Labor Hrs</span>
+            <strong id="snapshotLaborHours">0.0</strong>
+          </div>
+          <div>
+            <span>Severity</span>
+            <strong id="snapshotSeverity">Low</strong>
+          </div>
+          <div>
+            <span>Flags</span>
+            <strong id="snapshotFlags">0</strong>
+          </div>
+        </div>
+      </section>
+      <section class="card">
+        <div class="section-head compact-head">
+          <h2>Queue Dashboard</h2>
+          <small>Sidebar filters plus report date range</small>
+        </div>
+        <small id="dashboardScopeText">Current saved view</small>
+        <div class="saved-filters report-filters">
+          <label>Report From
+            <input id="reportStartDate" type="date" />
+          </label>
+          <label>Report To
+            <input id="reportEndDate" type="date" />
+          </label>
+        </div>
+        <div class="saved-actions report-actions">
+          <button id="exportDetailCsvBtn" type="button">Export Detail CSV</button>
+          <button id="exportSummaryCsvBtn" type="button">Export Monthly CSV</button>
+          <button id="printManagementReportBtn" type="button">Management Report</button>
+          <button id="clearReportRangeBtn" type="button" class="secondary-btn">Clear Range</button>
+        </div>
+        <div class="dashboard-grid">
+          <div class="dashboard-metric">
+            <span>Visible Records</span>
+            <strong id="dashboardVisibleCount">0</strong>
+          </div>
+          <div class="dashboard-metric">
+            <span>This Month</span>
+            <strong id="dashboardMonthCount">0</strong>
+          </div>
+          <div class="dashboard-metric">
+            <span>Monthly Total</span>
+            <strong id="dashboardMonthGrand">$0.00</strong>
+          </div>
+          <div class="dashboard-metric">
+            <span>Open Reviews</span>
+            <strong id="dashboardOpenCount">0</strong>
+          </div>
+          <div class="dashboard-metric">
+            <span>Due Soon</span>
+            <strong id="dashboardDueSoonCount">0</strong>
+          </div>
+          <div class="dashboard-metric">
+            <span>Overdue</span>
+            <strong id="dashboardOverdueCount">0</strong>
+          </div>
+        </div>
+          <div class="dashboard-grid">
+            <div class="dashboard-metric">
+              <span>Urgent Now</span>
+              <strong id="dashboardUrgentCount">0</strong>
+            </div>
+            <div class="dashboard-metric">
+              <span>Top Load</span>
+              <strong id="dashboardTopAssignee">None</strong>
+            </div>
+          </div>
+        <div class="table-wrap dashboard-table-wrap">
+          <table class="dashboard-table">
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Records</th>
+                <th>Total</th>
+                <th>Avg Ticket</th>
+              </tr>
+            </thead>
+            <tbody id="dashboardMonthRows">
+              <tr>
+                <td colspan="4">No saved estimates yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="dashboard-charts">
+          <section class="chart-card">
+            <div class="section-head compact-head">
+              <h3>Monthly Totals</h3>
+              <small>Visualized from the current report range</small>
+            </div>
+            <div id="dashboardMonthChart" class="chart-stack">
+              <div class="chart-empty">No monthly data yet.</div>
+            </div>
+          </section>
+          <section class="chart-card">
+            <div class="section-head compact-head">
+              <h3>Status Mix</h3>
+              <small>Current filtered queue</small>
+            </div>
+            <div id="dashboardStatusChart" class="chart-stack">
+              <div class="chart-empty">No status data yet.</div>
+            </div>
+          </section>
+          <section class="chart-card">
+            <div class="section-head compact-head">
+              <h3>Assignee Mix</h3>
+              <small>Owner or technician routing</small>
+            </div>
+            <div id="dashboardAssigneeChart" class="chart-stack">
+              <div class="chart-empty">No assignee data yet.</div>
+            </div>
+          </section>
+          <section class="chart-card">
+            <div class="section-head compact-head">
+              <h3>Repair Types</h3>
+              <small>Current filtered queue</small>
+            </div>
+            <div id="dashboardRepairTypeChart" class="chart-stack">
+              <div class="chart-empty">No repair-type data yet.</div>
+            </div>
+          </section>
+          <section class="chart-card">
+            <div class="section-head compact-head">
+              <h3>Assignee Workload</h3>
+              <small>Hours, value, and urgent work by owner</small>
+            </div>
+            <div id="dashboardAssigneeWorkloadChart" class="chart-stack">
+              <div class="chart-empty">No workload data yet.</div>
+            </div>
+          </section>
+        </div>
+      </section>
+      <section class="card">
+        <div class="section-head compact-head">
+          <h2>Saved Estimates</h2>
+          <small id="savedCountLabel">0 records</small>
+        </div>
+        <label class="toggle-row"><input id="activeOnlyToggle" type="checkbox" checked /> Active only</label>
+        <div class="saved-filters">
+          <label>Status
+            <select id="savedStatusFilter">
+              <option value="all">All statuses</option>
+              <option value="Draft">Draft</option>
+              <option value="Pending Approval">Pending Approval</option>
+              <option value="Insurance Review">Insurance Review</option>
+              <option value="Approved">Approved</option>
+              <option value="Supplement Needed">Supplement Needed</option>
+              <option value="Closed">Closed</option>
+            </select>
+          </label>
+          <label>Sort
+            <select id="savedSort">
+              <option value="updated-desc">Latest updated</option>
+              <option value="urgency-desc">Highest urgency</option>
+              <option value="updated-asc">Oldest updated</option>
+              <option value="date-desc">Latest estimate date</option>
+              <option value="date-asc">Oldest estimate date</option>
+              <option value="customer-asc">Customer A-Z</option>
+              <option value="status-asc">Status A-Z</option>
+            </select>
+          </label>
+          <label>Assignee
+            <select id="savedAssigneeFilter">
+              <option value="all">All assignees</option>
+            </select>
+          </label>
+          <label>Repair Type
+            <select id="savedRepairTypeFilter">
+              <option value="all">All repair types</option>
+              <option value="Collision">Collision</option>
+              <option value="Refinish">Refinish</option>
+              <option value="Mechanical">Mechanical</option>
+              <option value="Structural">Structural</option>
+              <option value="Detail">Detail</option>
+              <option value="Calibrations">Calibrations</option>
+              <option value="Mixed Repair">Mixed Repair</option>
+            </select>
+          </label>
+          <label>Urgency
+            <select id="savedUrgencyFilter">
+              <option value="all">All urgency</option>
+              <option value="Critical">Critical</option>
+              <option value="High">High</option>
+              <option value="Watch">Watch</option>
+              <option value="Normal">Normal</option>
+            </select>
+          </label>
+        </div>
+        <div class="saved-actions">
+          <button id="archiveVisibleBtn" type="button" class="secondary-btn">Archive Visible</button>
+          <button id="restoreVisibleBtn" type="button" class="secondary-btn">Restore Visible</button>
+          <button id="deleteArchivedBtn" type="button" class="secondary-btn">Delete Archived</button>
+        </div>
+        <input id="searchSaved" type="text" placeholder="Search by customer, VIN, claim, RO" />
+        <div id="savedList" class="saved-list"></div>
+      </section>
+      <section class="card no-print">
+        <div class="section-head compact-head">
+          <h2>Activity & History</h2>
+          <small id="historyStatusText">No activity yet</small>
+        </div>
+        <label>Activity Note<textarea id="activityNote" rows="3" placeholder="Add approval notes, insurer callbacks, supplement status, or delivery updates"></textarea></label>
+        <button id="addActivityNoteBtn" type="button">Add Note</button>
+        <div id="historyList" class="history-list"></div>
+      </section>
+      <section class="card">
+        <h2>Templates</h2>
+        <div class="template-grid">
+          <button class="template-btn" data-template="bumper">Bumper Repair</button>
+          <button class="template-btn" data-template="fender">Fender + Blend</button>
+          <button class="template-btn" data-template="door">Door Shell Repair</button>
+          <button class="template-btn" data-template="hail">Hail Estimate</button>
+          <button class="template-btn" data-template="collision">Front Collision</button>
+          <button class="template-btn" data-template="detail">Detail + Delivery</button>
+        </div>
+      </section>
+    </aside>
+    <section class="content">
+      <div class="content-tabs no-print" role="tablist" aria-label="Estimate sections">
+        <button type="button" class="content-tab is-active" data-content-tab="overview" role="tab" aria-selected="true">Overview</button>
+        <button type="button" class="content-tab" data-content-tab="messaging" role="tab" aria-selected="false">Packet Tools</button>
+        <button type="button" class="content-tab" data-content-tab="scheduling" role="tab" aria-selected="false">Scheduling</button>
+        <button type="button" class="content-tab" data-content-tab="intake" role="tab" aria-selected="false">Intake</button>
+        <button type="button" class="content-tab" data-content-tab="estimate" role="tab" aria-selected="false">Estimate</button>
+        <button type="button" class="content-tab" data-content-tab="delivery" role="tab" aria-selected="false">Delivery</button>
+      </div>
+      <section class="content-panel is-active" data-content-panel="overview" data-panel-title="Overview">
+        <div class="content-panel-head no-print">
+          <div>
+            <h2>Overview</h2>
+            <small>Core estimate identity, branding, and snapshot details.</small>
+          </div>
+          <button type="button" class="secondary-btn" data-section-popout="overview">Pop Out Editor</button>
+        </div>
+      <section class="hero-strip">
+        <article class="hero-card">
+          <span>Grand Total</span>
+          <strong id="heroGrandTotal">$0.00</strong>
+          <small id="heroVehicleLabel">No vehicle selected</small>
+        </article>
+        <article class="hero-card muted-card">
+          <span>Customer Due</span>
+          <strong id="heroCustomerDue">$0.00</strong>
+          <small id="heroCustomerLabel">Awaiting customer details</small>
+        </article>
+        <article class="hero-card muted-card">
+          <span>Approval Readiness</span>
+          <strong id="heroReadiness">Needs Work</strong>
+          <small id="heroReadinessNote">Fill core claim and vehicle fields</small>
+        </article>
+      </section>
+      <section class="card brand-block">
+        <div>
+          <h2 id="shopNameBlock">Xpressive Autoworks</h2>
+          <p id="shopTaglineBlock">Automotive Engineering ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Diagnostics ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Body & Collision Estimating</p>
+          <p id="shopContactBlock">Los Angeles Area ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Phone: 323-326-7354</p>
+        </div>
+        <div class="estimate-meta">
+          <label>Estimate #<input id="estimateNumber" type="text" /></label>
+          <label>Date<input id="estimateDate" type="date" /></label>
+          <label>Status<select id="estimateStatus"><option>Draft</option><option>Pending Approval</option><option>Insurance Review</option><option>Approved</option><option>Supplement Needed</option><option>Closed</option></select></label>
+        </div>
+      </section>
+      <section class="card">
+        <div class="section-head">
+          <h2>Shop Branding</h2>
+          <div class="brand-toolbar no-print">
+            <button id="uploadLogoBtn" type="button">Upload Logo</button>
+            <button id="removeLogoBtn" type="button" class="secondary-btn">Remove Logo</button>
+          </div>
+        </div>
+        <input id="logoInput" type="file" accept="image/*" hidden />
+        <div class="brand-grid">
+          <div id="logoPreview" class="logo-preview">
+            <span>No logo uploaded</span>
+          </div>
+          <div class="form-grid">
+            <label>Shop Name<input id="shopName" type="text" /></label>
+            <label>Tagline<input id="shopTagline" type="text" /></label>
+            <label>Phone<input id="shopPhone" type="text" /></label>
+            <label>Email<input id="shopEmail" type="email" /></label>
+            <label>Address Line 1<input id="shopAddress1" type="text" /></label>
+            <label>Address Line 2<input id="shopAddress2" type="text" /></label>
+          </div>
+        </div>
+      </section>
+      </section>
+      <section class="content-panel" data-content-panel="messaging" data-panel-title="Packet Tools" hidden>
+        <div class="content-panel-head no-print">
+          <div>
+            <h2>Packet Tools</h2>
+            <small>Carrier copy, customer notes, template library, and Copilot prompts.</small>
+          </div>
+          <button type="button" class="secondary-btn" data-section-popout="messaging">Pop Out Editor</button>
+        </div>
+      <section class="grid-2">
+        <section class="card">
+          <h2>Insurer Packet Copy</h2>
+          <div class="form-grid single-col">
+            <label>Cover Note<textarea id="insurerCoverNote" rows="4" placeholder="Explain supplement expectations, diagnostic needs, structural findings, or insurer-specific context"></textarea></label>
+            <label>Signature Label<input id="insurerSignatureLabel" type="text" placeholder="Estimator / Claims Contact" /></label>
+            <label>Signature Name<input id="insurerSignatureName" type="text" placeholder="Estimator or production manager" /></label>
+          </div>
+        </section>
+        <section class="card">
+          <h2>Customer Packet Copy</h2>
+          <div class="form-grid single-col">
+            <label>Cover Note<textarea id="customerCoverNote" rows="4" placeholder="Explain the repair plan, deductible, timing, or customer-facing delivery notes"></textarea></label>
+            <label>Signature Label<input id="customerSignatureLabel" type="text" placeholder="Customer Care / Repair Team" /></label>
+            <label>Signature Name<input id="customerSignatureName" type="text" placeholder="Advisor, estimator, or manager" /></label>
+          </div>
+        </section>
+      </section>
+      <section class="grid-2 no-print">
+        <section class="card">
+          <div class="section-head compact-head">
+            <h2>Insurer Note Tools</h2>
+            <small>Insert reusable carrier-facing packet copy</small>
+          </div>
+          <div class="template-grid note-template-grid">
+            <button class="note-template-btn" type="button" data-note-target="insurerCoverNote" data-note-template="carrier-review">Carrier Review</button>
+            <button class="note-template-btn" type="button" data-note-target="insurerCoverNote" data-note-template="supplement-request">Supplement Request</button>
+            <button class="note-template-btn" type="button" data-note-target="insurerCoverNote" data-note-template="calibration-required">Calibration Required</button>
+            <button class="note-template-btn" type="button" data-note-target="insurerCoverNote" data-note-template="parts-delay">Parts Delay</button>
+          </div>
+          <div class="template-actions">
+            <button class="contact-template-btn secondary-btn" type="button" data-contact-template="insurer">Insert Insurer Contact Block</button>
+          </div>
+        </section>
+        <section class="card">
+          <div class="section-head compact-head">
+            <h2>Customer Note Tools</h2>
+            <small>Insert reusable customer-facing packet copy</small>
+          </div>
+          <div class="template-grid note-template-grid">
+            <button class="note-template-btn" type="button" data-note-target="customerCoverNote" data-note-template="customer-intake">Repair Intake</button>
+            <button class="note-template-btn" type="button" data-note-target="customerCoverNote" data-note-template="deductible-reminder">Deductible Reminder</button>
+            <button class="note-template-btn" type="button" data-note-target="customerCoverNote" data-note-template="timeline-update">Timeline Update</button>
+            <button class="note-template-btn" type="button" data-note-target="customerCoverNote" data-note-template="delivery-ready">Delivery Ready</button>
+          </div>
+          <div class="template-actions">
+            <button class="contact-template-btn secondary-btn" type="button" data-contact-template="customer">Insert Customer Contact Block</button>
+          </div>
+        </section>
+      </section>
+      <section class="card no-print">
+        <div class="section-head compact-head">
+          <h2>Packet Template Library</h2>
+          <small>Shop-specific canned copy saved in this browser</small>
+        </div>
+        <div class="form-grid">
+          <label>Audience
+            <select id="templateAudienceSelect">
+              <option value="insurer">Insurer</option>
+              <option value="customer">Customer</option>
+            </select>
+          </label>
+          <label>Template
+            <select id="templateKeySelect">
+              <option value="carrier-review">Carrier Review</option>
+              <option value="supplement-request">Supplement Request</option>
+              <option value="calibration-required">Calibration Required</option>
+              <option value="parts-delay">Parts Delay</option>
+              <option value="customer-intake">Repair Intake</option>
+              <option value="deductible-reminder">Deductible Reminder</option>
+              <option value="timeline-update">Timeline Update</option>
+              <option value="delivery-ready">Delivery Ready</option>
+            </select>
+          </label>
+        </div>
+        <label>Template Copy
+          <textarea id="templateEditorText" rows="6" placeholder="Edit the selected canned note template"></textarea>
+        </label>
+        <div class="template-actions">
+          <button id="saveTemplateLibraryBtn" type="button">Save Template Copy</button>
+          <button id="exportTemplateLibraryBtn" type="button">Export Library</button>
+          <label class="import-label secondary-import">Import Library<input type="file" id="importTemplateLibraryFile" accept="application/json" hidden /></label>
+          <button id="resetTemplateEntryBtn" type="button" class="secondary-btn">Reset Selected</button>
+          <button id="resetTemplateLibraryBtn" type="button" class="secondary-btn">Reset All</button>
+        </div>
+        <p id="templateLibraryStatus" class="helper-text">Choose a template to edit its reusable text.</p>
+      </section>
+      <section class="card no-print">
+        <div class="section-head compact-head">
+          <div>
+            <h2>Windows Copilot</h2>
+            <small>Copy estimate-aware prompts and launch Copilot</small>
+          </div>
+          <span id="aiDesktopModeBadge" class="desktop-mode-badge">Browser Mode</span>
+        </div>
+        <label class="toggle-row"><input id="aiIncludeContext" type="checkbox" checked /> Include current estimate context</label>
+        <div class="template-grid ai-shortcut-grid">
+          <button id="aiQuickSummaryBtn" type="button" class="template-btn">Estimate Summary</button>
+          <button id="aiQuickMissingBtn" type="button" class="template-btn">Missing Info</button>
+          <button id="aiQuickInsurerBtn" type="button" class="template-btn">Insurer Note</button>
+          <button id="aiQuickCustomerBtn" type="button" class="template-btn">Customer Update</button>
+        </div>
+        <div class="template-grid ai-shortcut-grid">
+          <button id="aiCopyInsurerPromptBtn" type="button" class="template-btn">Copy Insurer Prompt</button>
+          <button id="aiCopyCustomerPromptBtn" type="button" class="template-btn">Copy Customer Prompt</button>
+        </div>
+        <div class="template-grid ai-shortcut-grid">
+          <button id="aiOpenInsurerPromptBtn" type="button" class="template-btn">Insurer to Copilot</button>
+          <button id="aiOpenCustomerPromptBtn" type="button" class="template-btn">Customer to Copilot</button>
+        </div>
+        <label>Prompt
+          <textarea id="aiPromptInput" rows="4" placeholder="Describe what you want Windows Copilot to do with this estimate. The app will copy the full prompt to the clipboard and launch Copilot."></textarea>
+        </label>
+        <div class="template-actions ai-actions">
+          <button id="aiOpenCopilotBtn" type="button">Open Windows Copilot</button>
+          <button id="aiCopyPromptBtn" type="button" class="secondary-btn">Copy Prompt Only</button>
+          <button id="aiClearChatBtn" type="button" class="secondary-btn">Clear History</button>
+        </div>
+        <p id="aiStatusText" class="helper-text">Windows Copilot does not expose a public prefilled prompt API here, so this app copies the prompt for you and then opens Copilot.</p>
+        <div id="aiAssistantMessages" class="ai-chat-list">
+          <div class="chart-empty">No Copilot prompt history yet. Use a shortcut or write your own prompt, then open Windows Copilot.</div>
+        </div>
+      </section>
+      </section>
+      <section class="content-panel" data-content-panel="scheduling" data-panel-title="Scheduling" hidden>
+        <div class="content-panel-head no-print">
+          <div>
+            <h2>Scheduling</h2>
+            <small>Queue routing, live calendar, and direct daily scheduling edits.</small>
+          </div>
+          <button type="button" class="secondary-btn" data-section-popout="scheduling">Pop Out Editor</button>
+        </div>
+      <section class="card">
+        <h2>Queue / Assignment</h2>
+        <div class="form-grid">
+          <label>Assigned To<input id="assignedTo" type="text" placeholder="Estimator, advisor, or technician" /></label>
+          <label>Repair Type<select id="repairType"><option>Collision</option><option>Refinish</option><option>Mechanical</option><option>Structural</option><option>Detail</option><option>Calibrations</option><option>Mixed Repair</option></select></label>
+          <label>Due Date<input id="dueDate" type="date" /></label>
+          <label>Reminder Date<input id="reminderDate" type="date" /></label>
+          <label>Tags<input id="estimateTags" type="text" placeholder="Fleet, tow-in, insurer priority, Tesla" /></label>
+          <label>Reminder Note<textarea id="reminderNote" rows="2" placeholder="What needs follow-up on the reminder date"></textarea></label>
+          <label>Internal Team Notes<textarea id="internalOwnerNotes" rows="2" placeholder="Owner handoff notes, cycle-time flags, or production routing"></textarea></label>
+        </div>
+      </section>
+      <section class="card no-print">
+        <div class="section-head compact-head">
+          <div>
+            <h2>Live Scheduling Calendar</h2>
+            <small id="scheduleScopeText">Filtered queue view with due dates and reminders</small>
+          </div>
+          <div class="calendar-toolbar">
+            <label class="calendar-view-label">View
+              <select id="scheduleViewSelect">
+                <option value="month">Month</option>
+                <option value="week">Week</option>
+              </select>
+            </label>
+            <button id="schedulePrevMonthBtn" type="button" class="secondary-btn">Prev</button>
+            <button id="scheduleTodayBtn" type="button">Today</button>
+            <button id="scheduleNextMonthBtn" type="button" class="secondary-btn">Next</button>
+            <button id="printScheduleBtn" type="button" class="secondary-btn">Print Schedule</button>
+            <button id="exportScheduleCsvBtn" type="button" class="secondary-btn">Schedule CSV</button>
+            <button id="exportScheduleIcsBtn" type="button" class="secondary-btn">Schedule ICS</button>
+          </div>
+        </div>
+        <div class="calendar-headline">
+          <strong id="scheduleMonthLabel">Month</strong>
+          <small id="scheduleSelectionLabel">Select a day to review scheduled work.</small>
+        </div>
+        <div class="calendar-weekdays" aria-hidden="true">
+          <span>Sun</span>
+          <span>Mon</span>
+          <span>Tue</span>
+          <span>Wed</span>
+          <span>Thu</span>
+          <span>Fri</span>
+          <span>Sat</span>
+        </div>
+        <div id="scheduleCalendarGrid" class="calendar-grid"></div>
+        <div class="calendar-agenda">
+          <div class="section-head compact-head">
+            <h3>Day Agenda</h3>
+            <small id="scheduleAgendaCount">0 items</small>
+          </div>
+          <div class="schedule-compose-card">
+            <div class="section-head compact-head">
+              <div>
+                <h3>Schedule This Day</h3>
+                <small id="scheduleComposeDateLabel">Choose a day to add work.</small>
+              </div>
+              <small id="scheduleComposeStatus" class="helper-text">Open a day, then create a new schedule or place the current estimate on that date.</small>
+            </div>
+            <div class="form-grid">
+              <label>Customer Name<input id="scheduleDraftCustomerName" type="text" placeholder="Customer or job label" /></label>
+              <label>Assignee<input id="scheduleDraftAssignee" type="text" placeholder="Estimator, advisor, or tech" /></label>
+              <label>Schedule Type
+                <select id="scheduleDraftType">
+                  <option value="due">Due Date</option>
+                  <option value="reminder">Reminder</option>
+                </select>
+              </label>
+              <label>Repair Type
+                <select id="scheduleDraftRepairType">
+                  <option value="Collision">Collision</option>
+                  <option value="Refinish">Refinish</option>
+                  <option value="Mechanical">Mechanical</option>
+                  <option value="Structural">Structural</option>
+                  <option value="Detail">Detail</option>
+                  <option value="Calibrations">Calibrations</option>
+                  <option value="Mixed Repair">Mixed Repair</option>
+                </select>
+              </label>
+              <label>Time Slot<input id="scheduleDraftTime" type="time" /></label>
+              <label class="form-span-2">Schedule Note<textarea id="scheduleDraftNote" rows="2" placeholder="Add a reminder note, handoff note, or delivery note for this day"></textarea></label>
+            </div>
+            <div class="template-actions">
+              <button id="scheduleCreateBtn" type="button">Create New Schedule</button>
+              <button id="scheduleCurrentEstimateBtn" type="button" class="secondary-btn">Schedule Current Estimate</button>
+              <button id="scheduleCancelEditBtn" type="button" class="secondary-btn" hidden>Cancel Edit</button>
+            </div>
+          </div>
+          <div id="scheduleAgendaList" class="schedule-agenda-list">
+            <div class="chart-empty">No scheduled items on this day.</div>
+          </div>
+        </div>
+      </section>
+      </section>
+      <section class="content-panel" data-content-panel="intake" data-panel-title="Intake" hidden>
+        <div class="content-panel-head no-print">
+          <div>
+            <h2>Intake</h2>
+            <small>Customer, vehicle, damage notes, and photo intake workflow.</small>
+          </div>
+          <button type="button" class="secondary-btn" data-section-popout="intake">Pop Out Editor</button>
+        </div>
+      <section class="grid-2">
+        <section class="card">
+          <h2>Customer / Insurance</h2>
+          <div class="form-grid">
+            <label>Customer Name<input id="customerName" type="text" /></label>
+            <label>Phone<input id="customerPhone" type="text" /></label>
+            <label>Email<input id="customerEmail" type="email" /></label>
+            <label>Address<input id="customerAddress" type="text" /></label>
+            <label>Insurance Company<input id="insuranceCompany" type="text" /></label>
+            <label>Insurance Estimate #<input id="insurerEstimateNumber" type="text" list="insurerEstimateNumberSuggestions" placeholder="Carrier reference / appraiser estimate #" /></label>
+            <div class="form-span-2 lookup-actions">
+              <button id="autoFillInsuranceEstimateBtn" type="button" class="secondary-btn">Auto Fill</button>
+              <small id="insurerLookupStatus" class="helper-text">Load a saved estimate by insurance estimate number.</small>
+            </div>
+            <datalist id="insurerEstimateNumberSuggestions"></datalist>
+            <label>Claim Number<input id="claimNumber" type="text" /></label>
+            <label>Policy Number<input id="policyNumber" type="text" /></label>
+            <label>Adjuster<input id="adjusterName" type="text" /></label>
+            <label>Adjuster Phone<input id="adjusterPhone" type="text" /></label>
+            <label>Deductible<input id="deductible" type="number" step="0.01" value="0" /></label>
+          </div>
+        </section>
+        <section class="card">
+          <h2>Vehicle / Loss Info</h2>
+          <div class="form-grid">
+            <label>Year<input id="vehicleYear" type="text" /></label>
+            <label>Make<input id="vehicleMake" type="text" /></label>
+            <label>Model<input id="vehicleModel" type="text" /></label>
+            <label>Trim<input id="vehicleTrim" type="text" /></label>
+            <label>VIN<input id="vehicleVin" type="text" /></label>
+            <label>License Plate<input id="vehiclePlate" type="text" /></label>
+            <label>Color<input id="vehicleColor" type="text" /></label>
+            <label>Mileage<input id="vehicleMileage" type="number" /></label>
+            <label>Date of Loss<input id="lossDate" type="date" /></label>
+            <label>Point of Impact<select id="impactPoint"><option>Front</option><option>Rear</option><option>Left Front</option><option>Right Front</option><option>Left Side</option><option>Right Side</option><option>Roof</option><option>Multiple</option></select></label>
+            <label>Drivable<select id="drivable"><option>Yes</option><option>No</option><option>Limited</option></select></label>
+            <label>Repair Priority<select id="priority"><option>Standard</option><option>Urgent</option><option>Insurance Deadline</option></select></label>
+          </div>
+        </section>
+      </section>
+      <section class="grid-2 insights-grid">
+        <section class="card">
+          <h2>Operational Notes</h2>
+          <div id="insightList" class="insight-list"></div>
+        </section>
+        <section class="card">
+          <h2>Missing Information</h2>
+          <div id="missingList" class="missing-list"></div>
+        </section>
+      </section>
+      <section class="card">
+        <h2>Damage Summary / Notes</h2>
+        <div class="form-grid single-col">
+          <label>Customer Concern / Loss Description<textarea id="lossDescription" rows="3"></textarea></label>
+          <label>Visible Damage<textarea id="visibleDamage" rows="3"></textarea></label>
+          <label>Structural / Frame Notes<textarea id="frameNotes" rows="3"></textarea></label>
+          <label>Refinish Notes / Blend Panels<textarea id="refinishNotes" rows="3"></textarea></label>
+          <label>Supplement Notes<textarea id="supplementNotes" rows="3"></textarea></label>
+        </div>
+      </section>
+      <section class="card">
+        <div class="section-head">
+          <h2>Photo Evidence</h2>
+          <div class="photo-toolbar no-print">
+            <small id="photoCountText">0 / 6 photos</small>
+            <button id="addPhotosBtn" type="button">Add Photos</button>
+          </div>
+        </div>
+        <input id="photoInput" type="file" accept="image/*" multiple hidden />
+        <div id="photoDropZone" class="photo-drop-zone no-print">Drop images here to upload, or drag cards to reorder them.</div>
+        <div id="photoGrid" class="photo-grid"></div>
+        <p class="photo-note no-print">Photos are resized before local save to keep storage usage reasonable.</p>
+      </section>
+      </section>
+      <section class="content-panel" data-content-panel="estimate" data-panel-title="Estimate" hidden>
+        <div class="content-panel-head no-print">
+          <div>
+            <h2>Estimate</h2>
+            <small>Labor guides, line items, rates, and financial totals.</small>
+          </div>
+          <button type="button" class="secondary-btn" data-section-popout="estimate">Pop Out Editor</button>
+        </div>
+      <section class="card">
+        <div class="section-head compact-head no-print">
+          <h2>Labor Guide Presets</h2>
+          <small>Quick insert common estimate lines</small>
+        </div>
+        <div id="laborGuideGrid" class="labor-guide-grid no-print"></div>
+      </section>
+      <section class="card">
+        <div class="section-head"><h2>Estimate Lines</h2><button id="addLineBtn" class="no-print">Add Line</button></div>
+        <div class="table-wrap">
+          <table id="linesTable"><thead><tr><th>Category</th><th>Operation</th><th>Panel / Part</th><th>Description</th><th>Qty</th><th>Labor Hrs</th><th>Rate</th><th>Parts</th><th>Materials</th><th>Total</th><th class="no-print">Del</th></tr></thead><tbody id="linesBody"></tbody></table>
+        </div>
+      </section>
+      <section class="grid-2">
+        <section class="card">
+          <h2>Rates / Charges</h2>
+          <div class="form-grid">
+            <label>Body Labor Rate<input id="bodyRate" type="number" step="0.01" value="85" /></label>
+            <label>Paint Labor Rate<input id="paintRate" type="number" step="0.01" value="90" /></label>
+            <label>Frame Labor Rate<input id="frameRate" type="number" step="0.01" value="110" /></label>
+            <label>Mechanical Rate<input id="mechRate" type="number" step="0.01" value="125" /></label>
+            <label>Paint Materials %<input id="paintMaterialsPct" type="number" step="0.01" value="15" /></label>
+            <label>Shop Supplies %<input id="shopSuppliesPct" type="number" step="0.01" value="5" /></label>
+            <label>Tax % on Parts<input id="taxPct" type="number" step="0.01" value="10.25" /></label>
+          </div>
+        </section>
+        <section class="card totals-card">
+          <h2>Estimate Totals</h2>
+          <div class="totals">
+            <div><span>Body Labor</span><strong id="bodyLaborTotal">$0.00</strong></div>
+            <div><span>Paint Labor</span><strong id="paintLaborTotal">$0.00</strong></div>
+            <div><span>Frame Labor</span><strong id="frameLaborTotal">$0.00</strong></div>
+            <div><span>Mechanical Labor</span><strong id="mechLaborTotal">$0.00</strong></div>
+            <div><span>Parts</span><strong id="partsTotal">$0.00</strong></div>
+            <div><span>Materials</span><strong id="materialsTotal">$0.00</strong></div>
+            <div><span>Calculated Paint Materials</span><strong id="calcPaintMaterials">$0.00</strong></div>
+            <div><span>Shop Supplies</span><strong id="shopSuppliesTotal">$0.00</strong></div>
+            <div><span>Tax on Parts</span><strong id="taxTotal">$0.00</strong></div>
+            <div><span>Deductible</span><strong id="deductibleTotal">$0.00</strong></div>
+            <div class="grand"><span>Grand Total</span><strong id="grandTotal">$0.00</strong></div>
+            <div class="grand due"><span>Customer Due</span><strong id="customerDue">$0.00</strong></div>
+          </div>
+        </section>
+      </section>
+      </section>
+      <section class="content-panel" data-content-panel="delivery" data-panel-title="Delivery" hidden>
+        <div class="content-panel-head no-print">
+          <div>
+            <h2>Delivery</h2>
+            <small>Final checklist review and customer authorization.</small>
+          </div>
+          <button type="button" class="secondary-btn" data-section-popout="delivery">Pop Out Editor</button>
+        </div>
+      <section class="card"><h2>Walkaround Checklist</h2><div id="checklistGrid" class="checklist-grid"></div></section>
+      <section class="card signature-card">
+        <h2>Authorization / Disclaimer</h2>
+        <p>Estimate reflects visible damage at time of inspection. Hidden damage may require supplement approval. Parts availability, insurer procedures, corrosion, prior repairs, calibration needs, and structural findings may change final repair cost and timing.</p>
+        <div class="signature-grid">
+          <label>Customer Approval<textarea id="customerApproval" rows="2" placeholder="Type name or approval note"></textarea></label>
+          <label>Estimator<textarea id="estimatorName" rows="2" placeholder="Estimator name"></textarea></label>
+        </div>
+      </section>
+      </section>
+    </section>
+  </main>
+  </div>
+  <div id="sectionEditModal" class="section-edit-modal no-print" aria-hidden="true">
+    <div class="section-edit-backdrop" data-section-modal-close="true"></div>
+    <div class="section-edit-shell" role="dialog" aria-modal="true" aria-labelledby="sectionEditTitle">
+      <div class="section-edit-header">
+        <div>
+          <span class="eyebrow">Focused Editing</span>
+          <h2 id="sectionEditTitle">Section Editor</h2>
+        </div>
+        <button id="sectionEditCloseBtn" type="button" class="secondary-btn">Back To Layout</button>
+      </div>
+      <div id="sectionEditBody" class="section-edit-body"></div>
+    </div>
+  </div>
+  <template id="lineRowTemplate"><tr><td><select class="line-category"><option>Body</option><option>Paint</option><option>Frame</option><option>Mechanical</option><option>Parts</option><option>Sublet</option><option>Detail</option></select></td><td><select class="line-operation"><option>Repair</option><option>Replace</option><option>Refinish</option><option>Blend</option><option>R&amp;I</option><option>Section</option><option>Calibrate</option><option>Sublet</option></select></td><td><input class="line-panel" type="text" /></td><td><input class="line-description" type="text" /></td><td><input class="line-qty" type="number" min="0" step="1" value="1" /></td><td><input class="line-hours" type="number" min="0" step="0.1" value="0" /></td><td><input class="line-rate" type="number" min="0" step="0.01" value="0" /></td><td><input class="line-parts" type="number" min="0" step="0.01" value="0" /></td><td><input class="line-materials" type="number" min="0" step="0.01" value="0" /></td><td class="line-total">$0.00</td><td class="no-print"><button class="delete-line" type="button">X</button></td></tr></template>
+  <script src="app.js"></script>
+</body>
+</html>
