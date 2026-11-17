@@ -23,3 +23,9 @@ Thumbs.db
 
 # Vercel
 .vercel
+
+# Large platform-specific assets (not needed for web deployment)
+Xpressive Autoworks Customer App/
+Xpressive Autoworks Repair Suite Android/
+_private_dev/
+output/
